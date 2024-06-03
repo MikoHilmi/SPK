@@ -17,6 +17,7 @@ use App\Http\Controllers\CripsController;
 use App\Http\Controllers\PenilaianController;
 use App\Http\Controllers\AlgoritmaController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ProfileController;
 
@@ -31,13 +32,16 @@ use App\Http\Controllers\ProfileController;
 |
 */
 
+Route::get('/', [FrontendController::class, 'index']);
+Route::get('/cek-nilai-siswa', [FrontendController::class, 'cekNilaiSiswa'])->name('cek-nilai-siswa');
+
 Route::get('login', [LoginController::class, 'showLoginForm']);
 Route::post('login', [LoginController::class, 'login'])->name('login');
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
     // Home
-    Route::get('/', [HomeController::class, 'index'])->name('home.index');
+    Route::get('/home', [HomeController::class, 'index'])->name('home.index');
 
     // Aplikasi
     Route::get('/pengaturan-aplikasi', [AplikasiController::class, 'index'])->name('pengaturan-apikasi.index');

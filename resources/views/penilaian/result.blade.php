@@ -190,60 +190,71 @@
                                                     class="btn btn-success d-sm-inline-block fw-bold">Export Nilai .xlsx</a>
                                             </div>
                                             <div class="table-responsive">
-                                            <table class="table table-bordered table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="text-dark">Nama Siswa</th>
-                                                        @foreach ($kriteria as $kriteriaItem)
-                                                            <th class="text-dark">{{ $kriteriaItem->name }}</th>
-                                                        @endforeach
-                                                        <th class="text-dark text-center align-middle" style="width: 100px">
-                                                            Total
-                                                        </th>
-                                                        <th class="text-dark text-center align-middle" style="width: 100px">
-                                                            Ranking
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @php
-                                                        $siswa_sorted = $siswa->where('periode_id', $periode->id)->map(function($siswa) use ($ranking) {
-                                                            $total = array_sum($ranking[$siswa->name] ?? []);
-                                                            return ['siswa' => $siswa, 'total' => $total];
-                                                        })->sortByDesc('total');
-
-                                                        $rank = 1;
-                                                        $prevTotal = null;
-                                                    @endphp
-                                                    @forelse ($siswa_sorted as $data)
+                                                <table class="table table-bordered table-hover">
+                                                    <thead>
                                                         <tr>
-                                                            <td>{{ $data['siswa']->name }}</td>
-                                                            @foreach ($ranking[$data['siswa']->name] ?? [] as $value)
-                                                                <td>
-                                                                    <span class="fw-bold">{{ number_format($value, 2) }}</span>
-                                                                </td>
+                                                            <th class="text-dark">Nama Siswa</th>
+                                                            @foreach ($kriteria as $kriteriaItem)
+                                                                <th class="text-dark">{{ $kriteriaItem->name }}</th>
                                                             @endforeach
-                                                            <!-- <td class="text-center align-middle">
-                                                                <span class="fw-bold">{{ number_format($data['total'], 2) }}</span>
-                                                            </td> -->
-                                                            @php
-                                                                if ($prevTotal !== null && $data['total'] != $prevTotal) {
-                                                                    $rank++;
-                                                                }
-                                                                $prevTotal = $data['total'];
-                                                            @endphp
-                                                            <td class="text-center align-middle">
-                                                                <span class="fw-bold rank">{{ $rank }}</span>
-                                                            </td>
+                                                            <th class="text-dark text-center align-middle"
+                                                                style="width: 100px">
+                                                                Total
+                                                            </th>
+                                                            <th class="text-dark text-center align-middle"
+                                                                style="width: 100px">
+                                                                Ranking
+                                                            </th>
+                                                            <th class="text-dark text-center align-middle"
+                                                                style="width: 100px">
+                                                                Status
+                                                            </th>
                                                         </tr>
-                                                    @empty
-                                                        <tr>
-                                                            <td colspan="100%">Tidak ada data siswa yang tersedia.</td>
-                                                        </tr>
-                                                    @endforelse
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                                    </thead>
+                                                    <tbody>
+                                                        @php
+                                                            $siswa_sorted = $siswa
+                                                                ->where('periode_id', $periode->id)
+                                                                ->map(function ($siswa) use ($ranking) {
+                                                                    $total = array_sum($ranking[$siswa->name] ?? []);
+                                                                    return ['siswa' => $siswa, 'total' => $total];
+                                                                })
+                                                                ->sortByDesc('total');
+
+                                                            $rank = 1;
+                                                            $prevTotal = null;
+                                                        @endphp
+                                                        @forelse ($siswa_sorted as $data)
+                                                            <tr>
+                                                                <td>{{ $data['siswa']->name }}</td>
+                                                                @foreach ($ranking[$data['siswa']->name] ?? [] as $value)
+                                                                    <td>
+                                                                        <span
+                                                                            class="fw-bold">{{ number_format($value, 2) }}</span>
+                                                                    </td>
+                                                                @endforeach
+                                                                @php
+                                                                    if (
+                                                                        $prevTotal !== null &&
+                                                                        $data['total'] != $prevTotal
+                                                                    ) {
+                                                                        $rank++;
+                                                                    }
+                                                                    $prevTotal = $data['total'];
+                                                                @endphp
+                                                                <td class="text-center align-middle">
+                                                                    <span class="fw-bold rank">{{ $rank }}</span>
+                                                                </td>
+                                                                <td>{{ $data['siswa']->status }}</td>
+                                                            </tr>
+                                                        @empty
+                                                            <tr>
+                                                                <td colspan="100%">Tidak ada data siswa yang tersedia.</td>
+                                                            </tr>
+                                                        @endforelse
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
