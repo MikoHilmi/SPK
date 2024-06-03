@@ -66,7 +66,7 @@ class LoginController extends Controller
             }
 
             Alert::toast('Berhasil login', 'success')->width('400px');
-            return redirect()->intended('/');
+            return redirect()->intended('/home');
         }
 
         Alert::toast('Email / Password anda salah!', 'error')->width('400px');
