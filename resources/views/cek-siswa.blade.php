@@ -57,6 +57,11 @@
                                 <td>:</td>
                                 <td id="nis"></td>
                             </tr>
+                            <tr>
+                                <td>Total Nilai</td>
+                                <td>:</td>
+                                <td id="total_nilai"></td>
+                            </tr>
                         </table>
                         <h5 class="text-center fw-bold" id="status"></h5>
                     </div>
@@ -103,10 +108,12 @@
                             $('#nis').text(response.student.nis);
                             $('#status').text(response.student
                                 .status);
+                            $('#total_nilai').text(response.student.total_nilai);
                             $('#result_container').show();
                         } else {
                             $('#nama_siswa').text('Data tidak ditemukan');
                             $('#nis').text('Data tidak ditemukan');
+                            $('#total_nilai').text('Data tidak ditemukan');
                             $('#status').text('');
                             $('#result_container').show();
                         }
@@ -114,6 +121,7 @@
                     error: function() {
                         $('#nama_siswa').text('Data tidak ditemukan');
                         $('#nis').text('Data tidak ditemukan');
+                        $('#total_nilai').text('Data tidak ditemukan');
                         $('#status').text('');
                         $('#result_container').show();
                     }

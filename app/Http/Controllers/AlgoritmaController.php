@@ -116,8 +116,9 @@ class AlgoritmaController extends Controller
 
         $rank = [];
         $ranking = [];
+        $jumlah_siswa = Siswa::count();
 
-        // perangkingan
+        // Perangkingan
         foreach ($normalisasi as $keyNormalisasi => $valueNormalisasi) {
             foreach ($kriteria as $keyKriteria => $valueKriteria) {
                 $kriteriaId = $valueKriteria->id;
@@ -134,42 +135,43 @@ class AlgoritmaController extends Controller
             $ranking[$keyNormalisasi][] = array_sum($rank[$keyNormalisasi]);
         }
 
-        arsort($ranking);
+        // Sort the ranking by total scores in descending order
+        uasort($ranking, function ($a, $b) {
+            return end($b) <=> end($a);
+        });
 
-        // Calculate thresholds for performance statuses
-        $scores = array_map(function ($values) {
-            return end($values); // Get total score
-        }, $ranking);
-
-        $totalScores = array_values($scores);
-        $count = count($totalScores);
-        sort($totalScores);
-
-        $thresholdBaik = $totalScores[intval($count * 0.1)]; // Top 10%
-        $thresholdCukup = $totalScores[intval($count * 0.3)]; // Top 30%
+        // Calculate the number of students for each performance status
+        $jumlah_sangat_baik = intval($jumlah_siswa * 0.2);
+        $jumlah_baik = intval($jumlah_siswa * 0.4);
+        $jumlah_cukup = $jumlah_siswa - ($jumlah_sangat_baik + $jumlah_baik);
 
         $performanceStatus = [];
+        $counter = 0;
+
         foreach ($ranking as $student => $values) {
             $totalScore = end($values); // Get the total score
 
-            // Determine status based on score thresholds
-            if ($totalScore >= $thresholdBaik) {
+            // Determine status based on rank
+            if ($counter < $jumlah_sangat_baik) {
+                $status = 'Sangat Baik';
+            } elseif ($counter < ($jumlah_sangat_baik + $jumlah_baik)) {
                 $status = 'Baik';
-            } elseif ($totalScore >= $thresholdCukup) {
-                $status = 'Cukup';
             } else {
-                $status = 'Sedang';
+                $status = 'Cukup';
             }
 
-            // Save status to the student record
+            // Save status and total score to the student record
             $siswaRecord = Siswa::where('name', $student)->first();
             if ($siswaRecord) {
                 $siswaRecord->status = $status;
+                $siswaRecord->total_nilai = $totalScore; // Save the total score
                 $siswaRecord->save();
             }
 
             // Store performance status for view
             $performanceStatus[$student] = $status;
+
+            $counter++;
         }
 
         return view('penilaian.result', compact('siswa', 'kriteria', 'periode', 'normalisasi', 'ranking', 'performanceStatus'));
